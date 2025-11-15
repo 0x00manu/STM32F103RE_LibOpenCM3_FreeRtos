@@ -1,5 +1,5 @@
 #ifndef __USBSERIAL_H__
-
+#define __USBSERIAL_H__
 #include <stdlib.h>
 #include <memory.h>
 #include <libopencm3/usb/usbd.h>
