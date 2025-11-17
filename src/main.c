@@ -4,32 +4,32 @@
 #include "usbserial.h"
 #include "FreeRTOS.h"
 #include "task.h"
-
+/*
 static void usbTask(void* args) {
 	usbserial_init();
 	gpio_clear(GPIOC, GPIO13);
 	for (;;) {
 		usbserial_pool();
-
+		
 		if (command != '\0') {
 			switch (command) {
 				case '0':
-					usbserial_writeline("turning led off");
-					usbserial_writeline("write '1' to turn led on");
-					gpio_set(GPIOC, GPIO13);
-					break;
-
-				case '1':
-					usbserial_writeline("turning led on");
-					usbserial_writeline("write '0' to turn led off");
-					gpio_clear(GPIOC, GPIO13);
+				usbserial_writeline("turning led off");
+				usbserial_writeline("write '1' to turn led on");
+				gpio_set(GPIOC, GPIO13);
 				break;
-
+				
+				case '1':
+				usbserial_writeline("turning led on");
+				usbserial_writeline("write '0' to turn led off");
+				gpio_clear(GPIOC, GPIO13);
+				break;
+				
 				case 't':
 					usbserial_writeline("toggling led state");
 					gpio_toggle(GPIOC, GPIO13);
 				break;
-
+				
 				case 'g':
 					if (1) {
 						int port_a_status = gpio_get(GPIOA, 0xFF);
@@ -47,21 +47,21 @@ static void usbTask(void* args) {
 						usbserial_writeline("");
 					}
 					break;
-
-				default:
+					
+					default:
 					
 					usbserial_writeline("unknown command");
 					break;
+				}
+				
+				command = '\0';
 			}
-
-			command = '\0';
-		}
 	}
 }
+*/
 
 /*
 ** Entry Point
-*/
 int main(void)
 {
 	// Blue Pill
@@ -71,16 +71,17 @@ int main(void)
 	rcc_periph_clock_enable(RCC_GPIOC);
     gpio_set_mode(GPIOC, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_PUSHPULL, GPIO13);
 	gpio_set(GPIOC, GPIO13); // turn led off at start
-
+	
 	xTaskCreate(usbTask, "usb", 200, NULL, configMAX_PRIORITIES - 1, NULL);
-
+	
 	// Start FreeRTOS
 	vTaskStartScheduler();
-
+	
 	for (;;);
-
+	
 	return 0;
 }
+*/
 
 /*
 ** Stack Overflow Hook
@@ -90,4 +91,19 @@ void vApplicationStackOverflowHook(TaskHandle_t xTask, char * pcTaskName) {
 		gpio_toggle(GPIOC, GPIO13);
 		vTaskDelay(pdMS_TO_TICKS(100));
 	}
+}
+
+int main(void)
+{
+    rcc_clock_setup_in_hse_8mhz_out_72mhz();
+
+    rcc_periph_clock_enable(RCC_GPIOC);
+    gpio_set_mode(GPIOC, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_PUSHPULL, GPIO13);
+    gpio_set(GPIOC, GPIO13);
+
+    startUsbTask();
+    vTaskStartScheduler();
+
+    for (;;);
+    return 0;
 }
